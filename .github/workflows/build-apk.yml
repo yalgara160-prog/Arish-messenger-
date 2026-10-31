@@ -63,19 +63,7 @@ jobs:
           if [ ! -d "$ANDROID_HOME/platforms/android-36" ] && [ -n "$HIGHEST_PLATFORM" ]; then
             echo "Synthesizing android-36 from $HIGHEST_PLATFORM..."
             cp -r "$HIGHEST_PLATFORM" "$ANDROID_HOME/platforms/android-36"
-            cat << 'EOF' > "$ANDROID_HOME/platforms/android-36/source.properties"
-Pkg.Desc=Android SDK Platform 16
-Pkg.UserSrc=false
-Platform.Version=16
-Platform.CodeName=
-Pkg.Revision=2
-AndroidVersion.ApiLevel=36
-AndroidVersion.ExtensionLevel=17
-AndroidVersion.IsBaseSdk=true
-Layoutlib.Api=15
-Layoutlib.Revision=1
-Platform.MinToolsRev=22
-EOF
+            printf "Pkg.Desc=Android SDK Platform 16\nPkg.UserSrc=false\nPlatform.Version=16\nPlatform.CodeName=\nPkg.Revision=2\nAndroidVersion.ApiLevel=36\nAndroidVersion.ExtensionLevel=17\nAndroidVersion.IsBaseSdk=true\nLayoutlib.Api=15\nLayoutlib.Revision=1\nPlatform.MinToolsRev=22\n" > "$ANDROID_HOME/platforms/android-36/source.properties"
             if [ -f "$ANDROID_HOME/platforms/android-36/package.xml" ]; then
               sed -i 's/<api-level>.*<\/api-level>/<api-level>36<\/api-level>/' "$ANDROID_HOME/platforms/android-36/package.xml" 2>/dev/null || true
               sed -i 's/path="platforms;android-[^"]*"/path="platforms;android-36"/' "$ANDROID_HOME/platforms/android-36/package.xml" 2>/dev/null || true
@@ -89,24 +77,19 @@ EOF
             fi
             echo "Synthesizing android-36.1 from $BASE_SRC..."
             cp -r "$BASE_SRC" "$ANDROID_HOME/platforms/android-36.1"
-            cat << 'EOF' > "$ANDROID_HOME/platforms/android-36.1/source.properties"
-Pkg.Desc=Android SDK Platform 16
-Pkg.UserSrc=false
-Platform.Version=16
-Platform.CodeName=
-Pkg.Revision=1
-AndroidVersion.ApiLevel=36.1
-AndroidVersion.ExtensionLevel=20
-AndroidVersion.IsBaseSdk=true
-Layoutlib.Api=15
-Layoutlib.Revision=1
-Platform.MinToolsRev=22
-EOF
+            printf "Pkg.Desc=Android SDK Platform 16\nPkg.UserSrc=false\nPlatform.Version=16\nPlatform.CodeName=\nPkg.Revision=1\nAndroidVersion.ApiLevel=36.1\nAndroidVersion.ExtensionLevel=20\nAndroidVersion.IsBaseSdk=true\nLayoutlib.Api=15\nLayoutlib.Revision=1\nPlatform.MinToolsRev=22\n" > "$ANDROID_HOME/platforms/android-36.1/source.properties"
             if [ -f "$ANDROID_HOME/platforms/android-36.1/package.xml" ]; then
               sed -i 's/<api-level>.*<\/api-level>/<api-level>36.1<\/api-level>/' "$ANDROID_HOME/platforms/android-36.1/package.xml" 2>/dev/null || true
               sed -i 's/path="platforms;android-[^"]*"/path="platforms;android-36.1"/' "$ANDROID_HOME/platforms/android-36.1/package.xml" 2>/dev/null || true
               sed -i 's/<display-name>.*<\/display-name>/<display-name>Android SDK Platform 36.1<\/display-name>/' "$ANDROID_HOME/platforms/android-36.1/package.xml" 2>/dev/null || true
             fi
+          fi
+
+          HIGHEST_BUILD_TOOLS=$(ls -1d "$ANDROID_HOME/build-tools"/* 2>/dev/null | sort -V | tail -n 1)
+          if [ ! -d "$ANDROID_HOME/build-tools/36.0.0" ] && [ -n "$HIGHEST_BUILD_TOOLS" ]; then
+            echo "Synthesizing build-tools 36.0.0 from $HIGHEST_BUILD_TOOLS..."
+            cp -r "$HIGHEST_BUILD_TOOLS" "$ANDROID_HOME/build-tools/36.0.0"
+            printf "Pkg.UserSrc=false\nPkg.Revision=36.0.0\n" > "$ANDROID_HOME/build-tools/36.0.0/source.properties"
           fi
 
           echo "sdk.dir=$ANDROID_HOME" > local.properties
