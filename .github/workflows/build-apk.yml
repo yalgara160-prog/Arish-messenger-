@@ -73,45 +73,7 @@ jobs:
         run: |
           if [ ! -f "app/google-services.json" ]; then
             echo "Writing app/google-services.json for build..."
-            cat << 'EOF' > app/google-services.json
-{
-  "project_info": {
-    "project_number": "126003157434",
-    "project_id": "gen-lang-client-0978982126",
-    "storage_bucket": "gen-lang-client-0978982126.firebasestorage.app"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:126003157434:android:e9c8dc99e6ea502dd8e583",
-        "android_client_info": {
-          "package_name": "com.aistudio.arishmessenger.vkmzxp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "126003157434-dc27ihgbka6741ksb8kfn0hi1edjfp58.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.aistudio.arishmessenger.vkmzxp",
-            "certificate_hash": "1b5442ed1087ae8d2f5cc0c90855b747b5d4f06c"
-          }
-        },
-        {
-          "client_id": "126003157434-hqhff5ro29q2ad7s81t81rhmglfhr990.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBGVFy82zJCXty1X8ND53DgoQTqwSGDoNY"
-        }
-      ]
-    }
-  ],
-  "configuration_version": "1"
-}
-EOF
+            echo "ewogICJwcm9qZWN0X2luZm8iOiB7CiAgICAicHJvamVjdF9udW1iZXIiOiAiMTI2MDAzMTU3NDM0IiwKICAgICJwcm9qZWN0X2lkIjogImdlbi1sYW5nLWNsaWVudC0wOTc4OTgyMTI2IiwKICAgICJzdG9yYWdlX2J1Y2tldCI6ICJnZW4tbGFuZy1jbGllbnQtMDk3ODk4MjEyNi5maXJlYmFzZXN0b3JhZ2UuYXBwIgogIH0sCiAgImNsaWVudCI6IFsKICAgIHsKICAgICAgImNsaWVudF9pbmZvIjogewogICAgICAgICJtb2JpbGVzZGtfYXBwX2lkIjogIjE6MTI2MDAzMTU3NDM0OmFuZHJvaWQ6ZTljOGRjOTllNmVhNTAyZGQ4ZTU4MyIsCiAgICAgICAgImFuZHJvaWRfY2xpZW50X2luZm8iOiB7CiAgICAgICAgICAicGFja2FnZV9uYW1lIjogImNvbS5haXN0dWRpby5hcmlzaG1lc3Nlbmdlci52a216eHAiCiAgICAgICAgfQogICAgICB9LAogICAgICAib2F1dGhfY2xpZW50IjogWwogICAgICAgIHsKICAgICAgICAgICJjbGllbnRfaWQiOiAiMTI2MDAzMTU3NDM0LWRjMjdpaGdia2E2NzQxa3NiOGtmbjBoaTFlZGpmcDU4LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwKICAgICAgICAgICJjbGllbnRfdHlwZSI6IDEsCiAgICAgICAgICAiYW5kcm9pZF9pbmZvIjogewogICAgICAgICAgICAicGFja2FnZV9uYW1lIjogImNvbS5haXN0dWRpby5hcmlzaG1lc3Nlbmdlci52a216eHAiLAogICAgICAgICAgICAiY2VydGlmaWNhdGVfaGFzaCI6ICIxYjU0NDJlZDEwODdhZThkMmY1Y2MwYzkwODU1Yjc0N2I1ZDRmMDZjIgogICAgICAgICAgfQogICAgICAgIH0sCiAgICAgICAgewogICAgICAgICAgImN1cnJlbnRfaWQiOiAiMTI2MDAzMTU3NDM0LWhxaGZmNXJvMjlxMmFkN3M4MXQ4MXJobWdsZmhyOTkwLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwKICAgICAgICAgICJjbGllbnRfdHlwZSI6IDMKICAgICAgICB9CiAgICAgIF0sCiAgICAgICJhcGlfa2V5IjogWwogICAgICAgIHsKICAgICAgICAgICJjdXJyZW50X2tleSI6ICJBSXphU3lCR1ZGeTgyekpDWHR5MVg4TkQ1M0Rnb1FUcXdTR0RvTlkiCiAgICAgICAgfQogICAgICBdLAogICAgICAic2VydmljZXMiOiB7CiAgICAgICAgImFwcGludml0ZV9zZXJ2aWNlIjogewogICAgICAgICAgIm90aGVyX3BsYXRmb3JtX29hdXRoX2NsaWVudCI6IFsKICAgICAgICAgICAgewogICAgICAgICAgICAgICJjbGllbnRfaWQiOiAiMTI2MDAzMTU3NDM0LWhxaGZmNXJvMjlxMmFkN3M4MXQ4MXJobWdsZmhyOTkwLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwKICAgICAgICAgICAgICAiY2xpZW50X3R5cGUiOiAzCiAgICAgICAgICAgIH0KICAgICAgICAgIF0KICAgICAgICB9CiAgICAgIH0KICAgIH0KICBdLAogICJjb25maWd1cmF0aW9uX3ZlcnNpb24iOiAiMSIKfQ==" | base64 -d > app/google-services.json
           fi
           echo "google-services.json is ready."
 
@@ -192,17 +154,10 @@ EOF
           RELEASE_TAG="debug-apk-build-${{ github.run_number }}-${{ github.run_attempt }}"
           RELEASE_TITLE="Debug APK Build #${{ github.run_number }}"
 
-          cat << 'EOF' > /tmp/release_notes.md
-          ### ARISH MESSENGER - Debug APK Build
-
-          - **Build Source:** Automatically generated debug APK built by GitHub Actions.
-          - **GitHub Actions Run Number:** ${{ github.run_number }}
-          - **GitHub Actions Run Attempt:** ${{ github.run_attempt }}
-          - **Source Commit SHA:** ${{ github.sha }}
-          - **Intended Use:** This APK is intended for testing and development only.
-          - **Production Notice:** This is not a Play Store production release.
-          - **Signing Details:** Signed with a temporary debug keystore for testing.
-          EOF
+          printf "### ARISH MESSENGER - Debug APK Build\n\n- **Build Source:** Automatically generated debug APK built by GitHub Actions.\n- **GitHub Actions Run Number:** %s\n- **GitHub Actions Run Attempt:** %s\n- **Source Commit SHA:** %s\n- **Intended Use:** This APK is intended for testing and development only.\n- **Production Notice:** This is not a Play Store production release.\n- **Signing Details:** Signed with a temporary debug keystore for testing.\n" \
+            "${{ github.run_number }}" \
+            "${{ github.run_attempt }}" \
+            "${{ github.sha }}" > /tmp/release_notes.md
 
           gh release create "$RELEASE_TAG" "$ASSET_PATH" \
             --title "$RELEASE_TITLE" \
