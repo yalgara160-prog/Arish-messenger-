@@ -19,11 +19,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Verify Java environment
         run: |
@@ -40,6 +40,14 @@ jobs:
             exit 1
           fi
           echo "Java environment verified successfully (version $JAVA_MAJOR >= 17)."
+
+      - name: Accept Android SDK licenses and install platform
+        run: |
+          mkdir -p "$ANDROID_HOME/licenses"
+          echo -e "\n24333f8a63b182405643d18e7887164a77a63060\nd56f5187479451eabf01fb78af6dfcb131a6481e\n84831b9409646a245e304447fed524d70be16477" >> "$ANDROID_HOME/licenses/android-sdk-license"
+          echo -e "\n89338d0d9b18363e91f13476223ba0c91f141a1f\n85642a32de5d743e4042d700e30382523549777f\n7324887cde41aab72207d5313bee030e429342d0" >> "$ANDROID_HOME/licenses/android-sdk-preview-license"
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" || true
 
       - name: Set up Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
@@ -68,6 +76,11 @@ jobs:
             exit 1
           fi
           echo "Debug keystore is ready."
+
+      - name: Ensure secrets.properties exists
+        run: |
+          touch secrets.properties local.defaults.properties
+          echo "Secrets properties placeholders ensured."
 
       - name: Ensure google-services.json exists
         run: |
