@@ -69,6 +69,52 @@ jobs:
           fi
           echo "Debug keystore is ready."
 
+      - name: Ensure google-services.json exists
+        run: |
+          if [ ! -f "app/google-services.json" ]; then
+            echo "Writing app/google-services.json for build..."
+            cat << 'EOF' > app/google-services.json
+{
+  "project_info": {
+    "project_number": "126003157434",
+    "project_id": "gen-lang-client-0978982126",
+    "storage_bucket": "gen-lang-client-0978982126.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126003157434:android:e9c8dc99e6ea502dd8e583",
+        "android_client_info": {
+          "package_name": "com.aistudio.arishmessenger.vkmzxp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "126003157434-dc27ihgbka6741ksb8kfn0hi1edjfp58.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aistudio.arishmessenger.vkmzxp",
+            "certificate_hash": "1b5442ed1087ae8d2f5cc0c90855b747b5d4f06c"
+          }
+        },
+        {
+          "client_id": "126003157434-hqhff5ro29q2ad7s81t81rhmglfhr990.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGVFy82zJCXty1X8ND53DgoQTqwSGDoNY"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}
+EOF
+          fi
+          echo "google-services.json is ready."
+
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace --no-daemon
 
