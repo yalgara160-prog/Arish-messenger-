@@ -100,35 +100,29 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.3.1'
+          cache-disabled: true
 
-      - name: Create temporary debug keystore
+      - name: Set up debug keystore
         run: |
           if [ -f "./debug.keystore" ]; then
             echo "Debug keystore already exists."
           else
-            echo "Generating temporary debug keystore..."
-            keytool -genkeypair \
-              -alias androiddebugkey \
-              -keypass android \
-              -keystore ./debug.keystore \
-              -storepass android \
-              -dname "CN=Android Debug,O=Android,C=US" \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000
+            echo "Restoring debug keystore from base64..."
+            echo "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" | base64 -d > ./debug.keystore
           fi
 
           if [ ! -f "./debug.keystore" ]; then
-            echo "Error: ./debug.keystore does not exist and could not be created."
+            echo "Error: ./debug.keystore does not exist."
             exit 1
           fi
           cp ./debug.keystore app/debug.keystore 2>/dev/null || true
           echo "Debug keystore is ready."
 
-      - name: Ensure secrets.properties exists
+      - name: Ensure environment and secrets exist
         run: |
-          touch secrets.properties local.defaults.properties
-          echo "Secrets properties placeholders ensured."
+          cp -n .env.example .env 2>/dev/null || true
+          touch .env secrets.properties local.defaults.properties
+          echo "Environment and secrets placeholders ensured."
 
       - name: Ensure google-services.json exists
         run: |
@@ -140,7 +134,21 @@ jobs:
 
       - name: Build debug APK
         run: |
-          gradle :app:assembleDebug --stacktrace --no-daemon
+          set +e
+          gradle :app:assembleDebug --no-build-cache --no-configuration-cache --no-daemon --stacktrace 2>&1 | tee gradle-build.log
+          GRADLE_EXIT_CODE=${PIPESTATUS[0]}
+          if [ $GRADLE_EXIT_CODE -ne 0 ]; then
+            echo "::error::Gradle assembleDebug failed with exit code $GRADLE_EXIT_CODE"
+            echo "======================= GRADLE ERROR DETAILS ======================="
+            grep -B 5 -A 40 "FAILURE: Build failed with an exception." gradle-build.log || true
+            grep -B 5 -A 40 "Execution failed for task" gradle-build.log || true
+            echo "===================================================================="
+            echo "### Gradle Build Failure Log" >> "$GITHUB_STEP_SUMMARY"
+            echo '```text' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 80 gradle-build.log >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            exit $GRADLE_EXIT_CODE
+          fi
 
       - name: Verify APK
         run: |
