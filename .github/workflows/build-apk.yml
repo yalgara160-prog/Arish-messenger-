@@ -41,13 +41,27 @@ jobs:
           fi
           echo "Java environment verified successfully (version $JAVA_MAJOR >= 17)."
 
-      - name: Accept Android SDK licenses and install platform
+      - name: Configure Android SDK and licenses
         run: |
           mkdir -p "$ANDROID_HOME/licenses"
-          echo -e "\n24333f8a63b182405643d18e7887164a77a63060\nd56f5187479451eabf01fb78af6dfcb131a6481e\n84831b9409646a245e304447fed524d70be16477" >> "$ANDROID_HOME/licenses/android-sdk-license"
-          echo -e "\n89338d0d9b18363e91f13476223ba0c91f141a1f\n85642a32de5d743e4042d700e30382523549777f\n7324887cde41aab72207d5313bee030e429342d0" >> "$ANDROID_HOME/licenses/android-sdk-preview-license"
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-36" || true
+          printf "24333f8a63b6825ea9c5514f83c2829b004d1fee\n24333f8a63b182405643d18e7887164a77a63060\nd56f5187479451eabf01fb78af6dfcb131a6481e\n84831b9409646a245e304447fed524d70be16477\n" >> "$ANDROID_HOME/licenses/android-sdk-license"
+          printf "84831b9409646a918e30573bab4c9c91346d8abd\n89338d0d9b18363e91f13476223ba0c91f141a1f\n85642a32de5d743e4042d700e30382523549777f\n7324887cde41aab72207d5313bee030e429342d0\n" >> "$ANDROID_HOME/licenses/android-sdk-preview-license"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "platforms;android-36.1" "build-tools;36.0.0" || true
+          
+          if [ -d "$ANDROID_HOME/platforms/android-36" ] && [ ! -d "$ANDROID_HOME/platforms/android-36.1" ]; then
+            echo "Creating platforms/android-36.1 compatibility platform from android-36..."
+            cp -r "$ANDROID_HOME/platforms/android-36" "$ANDROID_HOME/platforms/android-36.1"
+            if [ -f "$ANDROID_HOME/platforms/android-36.1/source.properties" ]; then
+              sed -i 's/AndroidVersion.ApiLevel=36/AndroidVersion.ApiLevel=36.1/' "$ANDROID_HOME/platforms/android-36.1/source.properties" || true
+              sed -i 's/AndroidVersion.ExtensionLevel=17/AndroidVersion.ExtensionLevel=20/' "$ANDROID_HOME/platforms/android-36.1/source.properties" || true
+            fi
+            echo "platforms/android-36.1 compatibility layer ready."
+          fi
+          
+          echo "sdk.dir=$ANDROID_HOME" > local.properties
+          echo "Android SDK configured with platforms:"
+          ls -la "$ANDROID_HOME/platforms"
 
       - name: Set up Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
@@ -75,6 +89,7 @@ jobs:
             echo "Error: ./debug.keystore does not exist and could not be created."
             exit 1
           fi
+          cp ./debug.keystore app/debug.keystore 2>/dev/null || true
           echo "Debug keystore is ready."
 
       - name: Ensure secrets.properties exists
@@ -91,7 +106,18 @@ jobs:
           echo "google-services.json is ready."
 
       - name: Build debug APK
-        run: gradle :app:assembleDebug --stacktrace --no-daemon
+        run: |
+          set -e
+          echo "Executing Gradle assembleDebug..."
+          gradle :app:assembleDebug --stacktrace --no-daemon --no-configuration-cache 2>&1 | tee gradle_build.log
+
+      - name: Capture build log on failure
+        if: failure()
+        run: |
+          echo "### Gradle Build Log on Failure" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          tail -n 80 gradle_build.log >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
 
       - name: Verify APK
         run: |
