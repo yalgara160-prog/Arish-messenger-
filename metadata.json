@@ -1,0 +1,6 @@
+{
+  "name": "ARISH MESSENGER",
+  "description": "Fast, modern, and simple messaging app inspired by WhatsApp with real-time chats, status stories, media sharing, and group chats.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

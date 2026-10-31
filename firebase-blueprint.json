@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile information and presence state",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Unique auth UID" },
+        "displayName": { "type": "string", "description": "User full name" },
+        "username": { "type": "string", "description": "Unique handle without spaces" },
+        "phoneNumber": { "type": "string", "description": "Mobile number with country code" },
+        "about": { "type": "string", "description": "Status quote or about info" },
+        "photoUrl": { "type": "string", "description": "Avatar image URL or identifier" },
+        "isOnline": { "type": "boolean", "description": "Online presence flag" },
+        "lastSeen": { "type": "string", "format": "date-time", "description": "Last seen timestamp" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Update timestamp" }
+      },
+      "required": ["userId", "displayName", "username", "createdAt", "updatedAt"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "Direct message or group conversation metadata",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Chat document ID" },
+        "isGroup": { "type": "boolean", "description": "Whether this chat is a group chat" },
+        "name": { "type": "string", "description": "Group title or blank for 1-on-1" },
+        "description": { "type": "string", "description": "Group description or topic" },
+        "photoUrl": { "type": "string", "description": "Group avatar URL" },
+        "adminUids": { "type": "array", "description": "UIDs of group admins" },
+        "participantUids": { "type": "array", "description": "UIDs of chat members" },
+        "pinnedByUids": { "type": "array", "description": "UIDs of users who pinned this chat" },
+        "lastMessageText": { "type": "string", "description": "Snippet of latest message" },
+        "lastMessageSenderId": { "type": "string", "description": "Sender UID of latest message" },
+        "lastMessageTimestamp": { "type": "string", "format": "date-time", "description": "Timestamp of latest message" },
+        "unreadCounts": { "type": "object", "description": "Unread message count per user UID" },
+        "typingUids": { "type": "array", "description": "UIDs actively typing" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Chat creation time" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Chat last active time" }
+      },
+      "required": ["id", "isGroup", "participantUids", "createdAt", "updatedAt"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Individual message inside a chat conversation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Message document ID" },
+        "chatId": { "type": "string", "description": "Parent chat ID" },
+        "senderId": { "type": "string", "description": "UID of author" },
+        "senderName": { "type": "string", "description": "Name of author" },
+        "recipientId": { "type": "string", "description": "Recipient UID if direct chat" },
+        "participantUids": { "type": "array", "description": "Denormalized chat members for access control" },
+        "text": { "type": "string", "description": "Message text content" },
+        "type": { "type": "string", "description": "Message type (text, image, audio, document)" },
+        "mediaUrl": { "type": "string", "description": "Media payload URL or encoded data" },
+        "mediaName": { "type": "string", "description": "File name for attachments" },
+        "mediaSize": { "type": "string", "description": "Readable file size" },
+        "audioDuration": { "type": "number", "description": "Duration in seconds for voice notes" },
+        "status": { "type": "string", "description": "Delivery status: sent, delivered, read" },
+        "replyToMessageId": { "type": "string", "description": "Quoted message ID" },
+        "replyToText": { "type": "string", "description": "Quoted message snippet" },
+        "replyToSender": { "type": "string", "description": "Quoted message author name" },
+        "reactions": { "type": "object", "description": "Emoji reactions mapped by user UID" },
+        "isEdited": { "type": "boolean", "description": "Whether message was edited" },
+        "isDeleted": { "type": "boolean", "description": "Whether message was deleted" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Sent timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last updated timestamp" }
+      },
+      "required": ["id", "chatId", "senderId", "participantUids", "type", "createdAt", "updatedAt"]
+    },
+    "Status": {
+      "title": "Status",
+      "description": "WhatsApp-style 24-hour disappearing story/status update",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Status document ID" },
+        "userId": { "type": "string", "description": "Author UID" },
+        "userName": { "type": "string", "description": "Author display name" },
+        "userPhotoUrl": { "type": "string", "description": "Author avatar URL" },
+        "type": { "type": "string", "description": "text or image" },
+        "content": { "type": "string", "description": "Status text content or image URL" },
+        "caption": { "type": "string", "description": "Optional caption for photo status" },
+        "backgroundColor": { "type": "string", "description": "Background color hex for text status" },
+        "viewerUids": { "type": "array", "description": "UIDs of users who viewed this status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "expiresAt": { "type": "string", "format": "date-time", "description": "Expiry timestamp (24h later)" }
+      },
+      "required": ["id", "userId", "userName", "type", "content", "createdAt"]
+    },
+    "BlockedUser": {
+      "title": "BlockedUser",
+      "description": "User block record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Block record ID" },
+        "userId": { "type": "string", "description": "UID of the user performing the block" },
+        "blockedUserId": { "type": "string", "description": "UID of the blocked contact" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Block timestamp" }
+      },
+      "required": ["id", "userId", "blockedUserId", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profile directory and presence"
+    },
+    "/chats/{chatId}": {
+      "schema": { "$ref": "#/entities/Chat" },
+      "description": "Conversation threads and group metadata"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Messages within each conversation thread"
+    },
+    "/statuses/{statusId}": {
+      "schema": { "$ref": "#/entities/Status" },
+      "description": "24-hour status story updates"
+    },
+    "/blockedUsers/{blockedId}": {
+      "schema": { "$ref": "#/entities/BlockedUser" },
+      "description": "User block entries"
+    }
+  }
+}

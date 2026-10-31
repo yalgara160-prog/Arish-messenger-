@@ -1,0 +1,148 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(val) {
+      return val is timestamp && val <= request.time;
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string &&
+             data.userId == request.auth.uid &&
+             data.displayName is string && data.displayName.size() > 0 && data.displayName.size() <= 100 &&
+             data.username is string && data.username.size() >= 3 && data.username.size() <= 30 &&
+             (!('phoneNumber' in data) || data.phoneNumber is string) &&
+             (!('about' in data) || data.about is string) &&
+             (!('photoUrl' in data) || data.photoUrl is string) &&
+             (!('isOnline' in data) || data.isOnline is bool) &&
+             (!('lastSeen' in data) || data.lastSeen is timestamp) &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidChat(data) {
+      return data.id is string &&
+             data.isGroup is bool &&
+             data.participantUids is list &&
+             request.auth.uid in data.participantUids &&
+             (!('name' in data) || data.name is string) &&
+             (!('description' in data) || data.description is string) &&
+             (!('photoUrl' in data) || data.photoUrl is string) &&
+             (!('adminUids' in data) || data.adminUids is list) &&
+             (!('pinnedByUids' in data) || data.pinnedByUids is list) &&
+             (!('lastMessageText' in data) || data.lastMessageText is string) &&
+             (!('lastMessageSenderId' in data) || data.lastMessageSenderId is string) &&
+             (!('lastMessageTimestamp' in data) || data.lastMessageTimestamp is timestamp) &&
+             (!('unreadCounts' in data) || data.unreadCounts is map) &&
+             (!('typingUids' in data) || data.typingUids is list) &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidMessage(data) {
+      return data.id is string &&
+             data.chatId is string &&
+             data.senderId is string &&
+             data.participantUids is list &&
+             request.auth.uid in data.participantUids &&
+             data.type in ['text', 'image', 'audio', 'document'] &&
+             (!('text' in data) || data.text is string) &&
+             (!('mediaUrl' in data) || data.mediaUrl is string) &&
+             (!('mediaName' in data) || data.mediaName is string) &&
+             (!('mediaSize' in data) || data.mediaSize is string) &&
+             (!('audioDuration' in data) || data.audioDuration is number) &&
+             (!('status' in data) || data.status in ['sent', 'delivered', 'read']) &&
+             (!('replyToMessageId' in data) || data.replyToMessageId is string) &&
+             (!('replyToText' in data) || data.replyToText is string) &&
+             (!('replyToSender' in data) || data.replyToSender is string) &&
+             (!('reactions' in data) || data.reactions is map) &&
+             (!('isEdited' in data) || data.isEdited is bool) &&
+             (!('isDeleted' in data) || data.isDeleted is bool) &&
+             isValidTimestamp(data.createdAt) &&
+             isValidTimestamp(data.updatedAt);
+    }
+
+    function isValidStatus(data) {
+      return data.id is string &&
+             data.userId is string &&
+             data.userName is string &&
+             data.type in ['text', 'image'] &&
+             data.content is string &&
+             (!('userPhotoUrl' in data) || data.userPhotoUrl is string) &&
+             (!('caption' in data) || data.caption is string) &&
+             (!('backgroundColor' in data) || data.backgroundColor is string) &&
+             (!('viewerUids' in data) || data.viewerUids is list) &&
+             isValidTimestamp(data.createdAt) &&
+             (!('expiresAt' in data) || data.expiresAt is timestamp);
+    }
+
+    function isValidBlockedUser(data) {
+      return data.id is string &&
+             data.userId == request.auth.uid &&
+             data.blockedUserId is string &&
+             isValidTimestamp(data.createdAt);
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow update: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow delete: if isOwner(userId);
+    }
+
+    // Chats and conversations
+    match /chats/{chatId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participantUids;
+      allow create: if isAuthenticated() && isValidChat(request.resource.data);
+      allow update: if isAuthenticated() && request.auth.uid in resource.data.participantUids && isValidChat(request.resource.data);
+      allow delete: if isAuthenticated() && request.auth.uid in resource.data.participantUids;
+
+      // Messages in chat
+      match /messages/{messageId} {
+        allow read: if isAuthenticated() && request.auth.uid in resource.data.participantUids;
+        allow create: if isAuthenticated() &&
+                        request.resource.data.senderId == request.auth.uid &&
+                        isValidMessage(request.resource.data);
+        allow update: if isAuthenticated() &&
+                        request.auth.uid in resource.data.participantUids &&
+                        isValidMessage(request.resource.data);
+        allow delete: if isAuthenticated() &&
+                        (resource.data.senderId == request.auth.uid || request.auth.uid in resource.data.participantUids);
+      }
+    }
+
+    // 24h Status updates
+    match /statuses/{statusId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() &&
+                      request.resource.data.userId == request.auth.uid &&
+                      isValidStatus(request.resource.data);
+      allow update: if isAuthenticated() && isValidStatus(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // Blocked contacts
+    match /blockedUsers/{blockedId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() &&
+                      request.resource.data.userId == request.auth.uid &&
+                      isValidBlockedUser(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+  }
+}
