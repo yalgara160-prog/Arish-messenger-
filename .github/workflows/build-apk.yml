@@ -133,6 +133,8 @@ jobs:
           echo "google-services.json is ready."
 
       - name: Build debug APK
+        env:
+          JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
         run: |
           set +e
           gradle :app:assembleDebug --no-build-cache --no-configuration-cache --no-daemon --stacktrace 2>&1 | tee gradle-build.log
