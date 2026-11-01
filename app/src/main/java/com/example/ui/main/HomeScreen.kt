@@ -20,8 +20,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
@@ -165,7 +165,7 @@ fun HomeScreen(
                             onClick = onNavigateToNewChat,
                             modifier = Modifier.testTag("new_chat_button")
                         ) {
-                            Icon(Icons.Default.Chat, contentDescription = "New Chat", tint = Color.White)
+                            Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "New Chat", tint = Color.White)
                         }
 
                         Box {
@@ -272,7 +272,7 @@ fun HomeScreen(
                         shape = CircleShape,
                         modifier = Modifier.testTag("fab_new_chat")
                     ) {
-                        Icon(Icons.Default.Chat, contentDescription = "New Chat")
+                        Icon(Icons.AutoMirrored.Filled.Chat, contentDescription = "New Chat")
                     }
                 }
                 MainTab.STATUS -> {
@@ -393,7 +393,7 @@ private fun ChatsTabContent(
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Chat,
+                                imageVector = Icons.AutoMirrored.Filled.Chat,
                                 contentDescription = null,
                                 tint = ArishEmeraldGreen,
                                 modifier = Modifier.size(36.dp)
