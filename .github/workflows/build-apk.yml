@@ -137,20 +137,30 @@ jobs:
           JAVA_TOOL_OPTIONS: "-Djava.awt.headless=true"
         run: |
           set +e
-          gradle :app:assembleDebug --no-build-cache --no-configuration-cache --no-daemon --stacktrace 2>&1 | tee gradle-build.log
+          gradle :app:assembleDebug --stacktrace 2>&1 | tee gradle-build.log
           GRADLE_EXIT_CODE=${PIPESTATUS[0]}
           if [ $GRADLE_EXIT_CODE -ne 0 ]; then
             echo "::error::Gradle assembleDebug failed with exit code $GRADLE_EXIT_CODE"
+            echo "======================= WHAT WENT WRONG ======================="
+            sed -n '/\* What went wrong:/,/\* Try:/p' gradle-build.log || true
+            echo "======================= COMPILATION ERRORS ======================="
+            grep -E "^(e: |w: |ERROR: |FAILURE: )" gradle-build.log | head -n 40 || true
             echo "======================= GRADLE ERROR DETAILS ======================="
-            grep -B 5 -A 40 "FAILURE: Build failed with an exception." gradle-build.log || true
-            grep -B 5 -A 40 "Execution failed for task" gradle-build.log || true
+            grep -B 2 -A 30 "Execution failed for task" gradle-build.log || true
             echo "===================================================================="
             echo "### Gradle Build Failure Log" >> "$GITHUB_STEP_SUMMARY"
             echo '```text' >> "$GITHUB_STEP_SUMMARY"
-            tail -n 80 gradle-build.log >> "$GITHUB_STEP_SUMMARY"
+            tail -n 120 gradle-build.log >> "$GITHUB_STEP_SUMMARY"
             echo '```' >> "$GITHUB_STEP_SUMMARY"
             exit $GRADLE_EXIT_CODE
           fi
+
+      - name: Upload build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-log
+          path: gradle-build.log
 
       - name: Verify APK
         run: |
